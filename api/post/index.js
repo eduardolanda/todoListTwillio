@@ -15,19 +15,18 @@ function sendMessage(sms){
 app.use(async ctx => {
   ctx.type = 'text/xml';
   const dbItem = await ctx.request.body.item
-  const dbDueBy = await ctx.request.body.by
-  const item = await post(dbItem,dbDueBy);
+  const item = await post(dbItem);
   ctx.body = sendMessage(`Item created`);
 })
 
-async function post(dbItem,dbDueBy) {
-  try {
-    const itemData = await pool.query(`INSERT INTO todo.todoList (todoDateAdded,todoDueBy,todoItem)
-    VALUES ( NOW(), DATE '${dbDueBy}', "${dbItem}" );`)
-  } catch (error) {
-    console.log(error)
+async function post(dbItem) {
+    try {
+      const itemData = await pool.query(`INSERT INTO todo.todoList (todoItem) VALUES ('${dbItem}');`)
+    } catch (error) {
+      console.log(error)
+    }
   }
-}
+  
 
 // app.post('/', (req, res) => {
 
