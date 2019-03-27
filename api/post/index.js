@@ -16,12 +16,14 @@ app.use(async ctx => {
   ctx.type = 'text/xml';
   const dbItem = await ctx.request.body.item
   const item = await post(dbItem);
-  ctx.body = sendMessage(`Item created`);
+  ctx.body = item;
+  sendMessage(`Item created`);
 })
 
 async function post(dbItem) {
     try {
       const itemData = await pool.query(`INSERT INTO todo.todoList (todoItem) VALUES ('${dbItem}');`)
+      return itemData
     } catch (error) {
       console.log(error)
     }
