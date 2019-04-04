@@ -2,9 +2,11 @@ const Koa = require('koa')
 const bodyParser = require('koa-bodyparser')
 const pool = require('../../DB/db')
 const MessagingResponse = require('twilio').twiml.MessagingResponse
+var logger = require('koa-pino-logger')
 
 const app = new Koa()
 app.use(bodyParser())
+app.use(logger())
 
 function sendMessage(sms){
     const twiml = new MessagingResponse();
@@ -14,14 +16,15 @@ function sendMessage(sms){
 
 app.use(async ctx => {
   ctx.type = 'text/xml';
-  const dbItem = await ctx.request.body.item
-  const item = await post(dbItem);
-  ctx.body = item;
-  sendMessage(`Item created`);
+  console.log(ctx.request.body)
+  const dbItem = await ctx.request.body.Body
+  await post(dbItem);
+  ctx.body = sendMessage(dbItem);
+  ctx.log.info('Item working properly')
 })
 
 async function post(dbItem) {
-    try {
+    try { 
       const itemData = await pool.query(`INSERT INTO todo.todoList (todoItem) VALUES ('${dbItem}');`)
       return itemData
     } catch (error) {
